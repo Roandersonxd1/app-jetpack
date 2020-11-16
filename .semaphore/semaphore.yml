@@ -4,7 +4,6 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-
 blocks:
   - name: 'Build'
     skip:
@@ -46,7 +45,6 @@ blocks:
             - adb shell settings put global transition_animation_scale 0
             - adb shell settings put global animator_duration_scale 0
             - ./gradlew connectedAndroidTest
-            -
       epilogue:
         always:
           commands:
