@@ -5,9 +5,6 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: 'Build'
-    skip:
-      when: "(branch != 'main' OR branch != 'main') AND pull_request !~ '.*'"
     task:
       jobs:
         - name: 'Build Project'
@@ -22,8 +19,6 @@ blocks:
             - cache store android-build ~/.android/build-cache
 
   - name: 'Verification'
-    skip:
-      when: "pull_request !~ '.*'"
     task:
       jobs:
         - name: 'Analyze Code'
