@@ -18,12 +18,3 @@ blocks:
             - cache store gradle-cache ~/.gradle/caches
             - cache store android-build ~/.android/build-cache
 
-  - name: 'Verification'
-    task:
-      jobs:
-        - name: 'Analyze Code'
-          commands:
-            - ./gradlew lint
-        - name: 'Unit Tests'
-          commands:
-            - ./gradlew test
