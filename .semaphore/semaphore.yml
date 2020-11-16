@@ -4,12 +4,50 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+
 blocks:
-  - name: Gradle
+  - name: 'Build'
+    skip:
+      when: "(branch != 'master' OR branch != 'dev') AND pull_request !~ '.*'"
     task:
       jobs:
-        - name: Build
+        - name: 'Build Project'
           commands:
-            - checkout
-            - sem-version java 1.8
-            - ./gradlew build
+            - ./gradlew bundle
+      epilogue:
+        on_pass:
+          commands:
+            - cache clear
+            - cache store gradle-wrapper ~/.gradle/wrapper
+            - cache store gradle-cache ~/.gradle/caches
+            - cache store android-build ~/.android/build-cache
+
+  - name: 'Verification'
+    skip:
+      when: "pull_request !~ '.*'"
+    task:
+      jobs:
+        - name: 'Analyze Code'
+          commands:
+            - ./gradlew lint
+        - name: 'Unit Tests'
+          commands:
+            - ./gradlew test
+        - name: 'Integration Tests'
+          commands:
+            - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
+            - sdkmanager "system-images;android-29;google_apis;x86"
+            - echo no | avdmanager create avd -n test-emulator -k "system-images;android-29;google_apis;x86"
+            - emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
+            - adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+            - adb shell wm dismiss-keyguard
+            - sleep 1
+            - adb shell settings put global window_animation_scale 0
+            - adb shell settings put global transition_animation_scale 0
+            - adb shell settings put global animator_duration_scale 0
+            - ./gradlew connectedAndroidTest
+      epilogue:
+        always:
+          commands:
+            - artifact push job --expire-in 2w --destination reports/ app/build/reports/
+
