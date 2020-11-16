@@ -33,6 +33,9 @@ blocks:
         - name: 'Unit Tests'
           commands:
             - ./gradlew test
+        - name: 'ktlint'
+            commands:
+              - ktlint
         - name: 'Integration Tests'
           commands:
             - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
@@ -46,6 +49,7 @@ blocks:
             - adb shell settings put global transition_animation_scale 0
             - adb shell settings put global animator_duration_scale 0
             - ./gradlew connectedAndroidTest
+            -
       epilogue:
         always:
           commands:
