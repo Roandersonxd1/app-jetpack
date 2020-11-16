@@ -57,5 +57,5 @@ promotions:
       when: "result = 'passed' AND branch = 'dev'"
   - name: Beta Deploy
     pipeline_file: deploy-beta.yml
-    auto_promote:
+    a         uto_promote:
       when: "result = 'passed' AND branch = 'master'"
