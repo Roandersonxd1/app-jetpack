@@ -33,9 +33,6 @@ blocks:
         - name: 'Unit Tests'
           commands:
             - ./gradlew test
-        - name: 'ktlint'
-            commands:
-              - ktlint
         - name: 'Integration Tests'
           commands:
             - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
