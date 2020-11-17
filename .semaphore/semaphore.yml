@@ -12,6 +12,10 @@ blocks:
           commands:
             - checkout
             - sudo chmod +x ./gradlew
+        -name: Install dependencies
+          commands:
+            - checkout
+            - ./gradlew androidDependencies
         - name: Build Project
           commands:
             - checkout
