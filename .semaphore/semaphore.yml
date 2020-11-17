@@ -8,6 +8,9 @@ blocks:
   - name: 'Build'
     task:
       jobs:
+        - name: 'Make gradlew executable'
+          commands:
+            - chmod +x ./gradlew
         - name: 'Build Project'
           commands:
             - ./gradlew bundle
