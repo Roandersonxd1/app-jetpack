@@ -6,8 +6,6 @@ agent:
     os_image: ubuntu1804
 blocks:
   - name: 'Build'
-    skip:
-      when: "(branch != 'master' OR branch != 'dev') AND pull_request !~ '.*'"
     task:
       jobs:
         - name: 'Build Project'
@@ -32,7 +30,7 @@ blocks:
         - name: 'Downloading KTLINT'
           commands:
             - curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin
-        - name: 'Unit Tests'
+        - name: 'Ktlint Format'
           commands:
             - ktlint
         - name: 'Unit Tests'
