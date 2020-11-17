@@ -21,7 +21,9 @@ blocks:
             - ./gradlew androidDependencies
         - name: Downloading KTLINT
           commands:
-            - 'brew install ktlint'
+            - 'curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint &&
+                 chmod a+x ktlint &&
+                 sudo mv ktlint /usr/local/bin/'
         - name: Build Project
           commands:
             - checkout
