@@ -19,6 +19,7 @@ blocks:
         - name: 'Build Project'
           commands:
             - checkout
+            - chmod +x ./gradlew
             - ./gradlew bundle
       epilogue:
         on_pass:
