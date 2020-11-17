@@ -4,66 +4,62 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+auto_cancel:
+  running:
+    when: "true"
+
+global_job_config:
+  env_vars:
+    - name: ADB_INSTALL_TIMEOUT
+      value: "10"
+  secrets:
+    - name: android_keys
+  prologue:
+    commands:
+      - checkout
+      - mv ~/release-keystore.jks ~/$SEMAPHORE_GIT_DIR/app/release-keystore.jks
+      - cache restore gradle-wrapper
+      - cache restore gradle-cache
+      - cache restore android-build
+
 blocks:
-  - name: Build
+  - name: 'Build'
     task:
       jobs:
-        - name: Make gradlew executable
+        - name: 'Build Project'
           commands:
-            - checkout
-            - sudo chmod +x ./gradlew
-        - name: Install dependencies
-          commands:
-            - checkout
-            - ./gradlew androidDependencies
-#        - name: Build Project
-#          commands:
-#            - checkout
-#            - ./gradlew bundle
+            - ./gradlew bundle
       epilogue:
         on_pass:
           commands:
-            - checkout
             - cache clear
             - cache store gradle-wrapper ~/.gradle/wrapper
             - cache store gradle-cache ~/.gradle/caches
             - cache store android-build ~/.android/build-cache
-  - name: Verification
-#    skip:
-#      when: pull_request !~ '.*'
+
+  - name: 'Verification'
     task:
       jobs:
-        - name: Analyze Code
+        - name: 'Analyze Code'
           commands:
-            - checkout
             - ./gradlew lint
-        - name: Downloading KTLINT
+        - name: 'Unit Tests'
           commands:
-            - 'curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin'
-        - name: Ktlint Format
-          commands:
-            - checkout
-            - ktlint
-        - name: Unit Tests
-          commands:
-            - checkout
             - ./gradlew test
-#        - name: Integration Tests
-#          commands:
-#            - checkout
-#            - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
-#            - sdkmanager "system-images;android-29;google_apis;x86"
-#            - echo no | avdmanager create avd -n test-emulator -k "system-images;android-29;google_apis;x86"
-#            - emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
-#            - 'adb wait-for-device shell ''while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'''
-#            - adb shell wm dismiss-keyguard
-#            - sleep 1
-#            - adb shell settings put global window_animation_scale 0
-#            - adb shell settings put global transition_animation_scale 0
-#            - adb shell settings put global animator_duration_scale 0
-#            - ./gradlew connectedAndroidTest
+        - name: 'Integration Tests'
+          commands:
+            - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
+            - sdkmanager "system-images;android-29;google_apis;x86"
+            - echo no | avdmanager create avd -n test-emulator -k "system-images;android-29;google_apis;x86"
+            - emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
+            - adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+            - adb shell wm dismiss-keyguard
+            - sleep 1
+            - adb shell settings put global window_animation_scale 0
+            - adb shell settings put global transition_animation_scale 0
+            - adb shell settings put global animator_duration_scale 0
+            - ./gradlew connectedAndroidTest
       epilogue:
         always:
           commands:
-            - checkout
             - artifact push job --expire-in 2w --destination reports/ app/build/reports/
