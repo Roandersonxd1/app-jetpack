@@ -47,7 +47,6 @@ blocks:
             sudo mv ktlint /usr/local/bin'
         - name: Ktlint Format
           commands:
-            - checkout
             - ktlint
         - name: Unit Tests
           commands:
