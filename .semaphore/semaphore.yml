@@ -40,14 +40,11 @@ blocks:
           commands:
             - checkout
             - ./gradlew lint
-        - name: Downloading KTLINT
+        - name: KTLINT
           commands:
             - 'curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint &&
             chmod a+x ktlint &&
             sudo mv ktlint /usr/local/bin'
-        - name: Ktlint Format
-          commands:
-            - sudo chmod +x ktlint
             - ktlint
         - name: Unit Tests
           commands:
