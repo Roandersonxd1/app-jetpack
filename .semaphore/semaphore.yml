@@ -5,14 +5,16 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: 'Build'
+  - name: Build
     task:
       jobs:
-        - name: 'Make gradlew executable'
+        - name: Make gradlew executable
           commands:
+            - checkout
             - chmod +x ./gradlew
-        - name: 'Build Project'
+        - name: Build Project
           commands:
+            - checkout
             - ./gradlew bundle
       epilogue:
         on_pass:
@@ -21,31 +23,30 @@ blocks:
             - cache store gradle-wrapper ~/.gradle/wrapper
             - cache store gradle-cache ~/.gradle/caches
             - cache store android-build ~/.android/build-cache
-
-  - name: 'Verification'
+  - name: Verification
     skip:
-      when: "pull_request !~ '.*'"
+      when: pull_request !~ '.*'
     task:
       jobs:
-        - name: 'Analyze Code'
+        - name: Analyze Code
           commands:
             - ./gradlew lint
-        - name: 'Downloading KTLINT'
+        - name: Downloading KTLINT
           commands:
-            - curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin
-        - name: 'Ktlint Format'
+            - 'curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin'
+        - name: Ktlint Format
           commands:
             - ktlint
-        - name: 'Unit Tests'
+        - name: Unit Tests
           commands:
             - ./gradlew test
-        - name: 'Integration Tests'
+        - name: Integration Tests
           commands:
             - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
             - sdkmanager "system-images;android-29;google_apis;x86"
             - echo no | avdmanager create avd -n test-emulator -k "system-images;android-29;google_apis;x86"
             - emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
-            - adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+            - 'adb wait-for-device shell ''while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'''
             - adb shell wm dismiss-keyguard
             - sleep 1
             - adb shell settings put global window_animation_scale 0
