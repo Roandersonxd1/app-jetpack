@@ -64,8 +64,3 @@ blocks:
 #            - adb shell settings put global transition_animation_scale 0
 #            - adb shell settings put global animator_duration_scale 0
 #            - ./gradlew connectedAndroidTest
-      epilogue:
-        always:
-          commands:
-            - checkout
-            - artifact push job --expire-in 2w --destination reports/ app/build/reports/
