@@ -16,13 +16,14 @@ blocks:
           commands:
             - checkout
             - ./gradlew androidDependencies
-        - name: Build Project
-          commands:
-            - checkout
-            - ./gradlew bundle
+#        - name: Build Project
+#          commands:
+#            - checkout
+#            - ./gradlew bundle
       epilogue:
         on_pass:
           commands:
+            - checkout
             - cache clear
             - cache store gradle-wrapper ~/.gradle/wrapper
             - cache store gradle-cache ~/.gradle/caches
@@ -34,18 +35,22 @@ blocks:
       jobs:
         - name: Analyze Code
           commands:
+            - checkout
             - ./gradlew lint
         - name: Downloading KTLINT
           commands:
             - 'curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin'
         - name: Ktlint Format
           commands:
+            - checkout
             - ktlint
         - name: Unit Tests
           commands:
+            - checkout
             - ./gradlew test
         - name: Integration Tests
           commands:
+            - checkout
             - sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
             - sdkmanager "system-images;android-29;google_apis;x86"
             - echo no | avdmanager create avd -n test-emulator -k "system-images;android-29;google_apis;x86"
@@ -60,4 +65,5 @@ blocks:
       epilogue:
         always:
           commands:
+            - checkout
             - artifact push job --expire-in 2w --destination reports/ app/build/reports/
