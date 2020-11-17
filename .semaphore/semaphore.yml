@@ -19,10 +19,10 @@ blocks:
           commands:
             - checkout
             - ./gradlew androidDependencies
-#        - name: Build Project
-#          commands:
-#            - checkout
-#            - ./gradlew bundle
+        - name: Build Project
+          commands:
+            - checkout
+            - ./gradlew bundle
       epilogue:
         on_pass:
           commands:
