@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">App-Jetpack</string>
+    <string name="app_name">Componentes android jetpack</string>
+    <!-- Start fragment   -->
+    <string name="start_action_bar_title">Start fragment</string>
+    <string name="start_button_text_next">Next</string>
+
+    <!-- Profile fragment   -->
+    <string name="profile_action_bar_title">Profile fragment</string>
+
 </resources>
